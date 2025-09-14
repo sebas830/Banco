@@ -15,6 +15,10 @@
         Usuario o contraseña incorrectos.
     </div>
 
+    <div th:if="${param.expired}">
+        <p style="color:red;">Tu sesión ha expirado o fue iniciada en otro dispositivo.</p>
+    </div>
+
     <!-- Mensaje si el usuario cerró sesión -->
     <div th:if="${param.logout}" class="alert alert-success text-center">
         Has cerrado sesión correctamente.
