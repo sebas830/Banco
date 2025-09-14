@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Cliente Banco</title>
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+          display: flex;
+        }
+
+        /* Panel lateral */
+        .sidebar {
+          width: 200px;
+          background-color: #0d47a1;
+          color: white;
+          height: 100vh;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+        .sidebar h2 {
+          margin-bottom: 20px;
+        }
+        .sidebar button {
+          width: 100%;
+          padding: 10px;
+          margin: 10px 0;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          background: #1976d2;
+          color: white;
+        }
+        .sidebar button:hover {
+          background: #1565c0;
+        }
+        .cerrar {
+          background: #d32f2f;
+        }
+        .cerrar:hover {
+          background: #b71c1c;
+        }
+
+        /* Contenido principal */
+        .main {
+          flex: 1;
+          padding: 20px;
+        }
+        .saldo {
+          background: #e3f2fd;
+          padding: 20px;
+          margin-bottom: 20px;
+          border-radius: 10px;
+          font-size: 20px;
+          font-weight: bold;
+        }
+
+        /* Movimientos */
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px;
+        }
+        th, td {
+          padding: 10px;
+          border: 1px solid #ddd;
+          text-align: left;
+        }
+        th {
+          background: #1976d2;
+          color: white;
+        }
+
+        /* Formulario transacción */
+        form {
+          background: #f1f1f1;
+          padding: 20px;
+          border-radius: 10px;
+        }
+        input, button {
+          padding: 10px;
+          margin: 5px 0;
+          width: 100%;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        form button {
+          background: #1976d2;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+        form button:hover {
+          background: #1565c0;
+        }
+    .form-transparent {
+        background-color: transparent; /* elimina fondo */
+        border: none;                  /* sin borde */
+        box-shadow: none;               /* sin sombra */
+        padding: 0;                     /* elimina padding */
+        margin: 0;                      /* elimina margen */
+    }
+
+    .form-transparent button {
+        background-color: #dc3545; /* color rojo bootstrap */
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px;
+        width: 100%;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+
+    .form-transparent button:hover {
+        background-color: #b02a37; /* rojo más oscuro al pasar el mouse */
+    }
+    </style>
+</head>
+<body>
+<!-- Panel lateral -->
+<div class="sidebar">
+    <div>
+        <h2>Mi Banco</h2>
+        <button onclick="mostrar('saldo')">Saldo</button>
+        <button onclick="mostrar('movimientos')">Movimientos</button>
+        <button onclick="mostrar('transaccion')">Nueva Transacción</button>
+    </div>
+    <div>
+        <form th:action="@{/logout}" method="post" class="form-transparent">
+            <button type="submit">Cerrar sesión</button>
+        </form>
+    </div>
+</div>
+
+<!-- Contenido principal -->
+<div class="main">
+    <div id="saldo" class="seccion">
+        <div class="saldo">Saldo actual: $<span id="saldo-actual">5000</span></div>
+    </div>
+
+    <div id="movimientos" class="seccion" style="display:none;">
+        <h3>Movimientos</h3>
+        <table>
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Monto</th>
+                <th>N° Cuenta</th>
+            </tr>
+            </thead>
+            <tbody id="tabla-movimientos">
+            <tr><td>2025-09-10</td><td>Depósito</td><td>+ $1000</td><td>1234567890</td></tr>
+            <tr><td>2025-09-12</td><td>Transferencia</td><td>- $500</td><td>9876543210</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="transaccion" class="seccion" style="display:none;">
+        <h3>Nueva Transacción</h3>
+        <form onsubmit="hacerTransaccion(event)">
+            <input type="text" id="descripcion" placeholder="Descripción" required>
+            <input type="number" id="monto" placeholder="Monto" required>
+            <input type="text" id="cuenta" placeholder="Número de Cuenta" required>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Mostrar secciones
+    function mostrar(id) {
+      document.querySelectorAll('.seccion').forEach(sec => sec.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+
+    // Función para transacciones
+    function hacerTransaccion(e) {
+      e.preventDefault();
+      let desc = document.getElementById("descripcion").value;
+      let monto = parseFloat(document.getElementById("monto").value);
+      let cuenta = document.getElementById("cuenta").value;
+      let saldo = document.getElementById("saldo-actual");
+      let saldoActual = parseFloat(saldo.innerText);
+
+      // Actualizar saldo
+      saldoActual -= monto;
+      saldo.innerText = saldoActual;
+
+      // Agregar a la tabla de movimientos
+      let fila = `<tr>
+        <td>${new Date().toISOString().slice(0,10)}</td>
+        <td>${desc}</td>
+        <td>- $${monto}</td>
+        <td>${cuenta}</td>
+      </tr>`;
+      document.getElementById("tabla-movimientos").innerHTML += fila;
+
+      // Resetear formulario
+      document.querySelector("form").reset();
+      mostrar("movimientos");
+    }
+
+    // Cerrar sesión
+    function cerrarSesion() {
+      alert("Sesión cerrada. ¡Hasta pronto!");
+      window.location.reload();
+    }
+</script>
+</body>
+</html>
+
