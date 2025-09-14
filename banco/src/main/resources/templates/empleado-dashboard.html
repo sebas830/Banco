@@ -38,11 +38,26 @@
         .sidebar button:hover {
           background: #00695c;
         }
-        .cerrar {
-          background: #d32f2f;
+
+        /* Botón cerrar sesión */
+        .form-transparent {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
         }
-        .cerrar:hover {
-          background: #b71c1c;
+        .form-transparent button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .form-transparent button:hover {
+            background-color: #b02a37;
         }
 
         /* Contenido principal */
@@ -93,28 +108,6 @@
         form button:hover {
           background: #00695c;
         }
-    .form-transparent {
-        background-color: transparent; /* elimina fondo */
-        border: none;                  /* sin borde */
-        box-shadow: none;               /* sin sombra */
-        padding: 0;                     /* elimina padding */
-        margin: 0;                      /* elimina margen */
-    }
-
-    .form-transparent button {
-        background-color: #dc3545; /* color rojo bootstrap */
-        color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 10px;
-        width: 100%;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .form-transparent button:hover {
-        background-color: #b02a37; /* rojo más oscuro al pasar el mouse */
-    }
     </style>
 </head>
 <body>
@@ -123,9 +116,7 @@
     <div>
         <h2>Empleado Banco</h2>
         <button onclick="mostrar('clientes')">Clientes</button>
-        <button onclick="mostrar('cuentas')">Cuentas</button>
         <button onclick="mostrar('transacciones')">Transacciones</button>
-        <button onclick="mostrar('nuevaCuenta')">Registrar Cuenta</button>
         <button onclick="mostrar('hacerTransaccion')">Hacer Transacción</button>
     </div>
     <div>
@@ -156,24 +147,6 @@
         </table>
     </div>
 
-    <!-- Sección Cuentas -->
-    <div id="cuentas" class="seccion" style="display:none;">
-        <h3>Consulta de Cuentas</h3>
-        <table>
-            <thead>
-            <tr>
-                <th>N° Cuenta</th>
-                <th>Cliente</th>
-                <th>Saldo</th>
-            </tr>
-            </thead>
-            <tbody id="tabla-cuentas">
-            <tr><td>1234567890</td><td>Ana Gómez</td><td>$3500</td></tr>
-            <tr><td>9876543210</td><td>Carlos Pérez</td><td>$7800</td></tr>
-            </tbody>
-        </table>
-    </div>
-
     <!-- Sección Transacciones -->
     <div id="transacciones" class="seccion" style="display:none;">
         <h3>Historial de Transacciones</h3>
@@ -192,17 +165,6 @@
             <tr><td>2025-09-12</td><td>Carlos Pérez</td><td>Retiro</td><td>- $500</td><td>9876543210</td></tr>
             </tbody>
         </table>
-    </div>
-
-    <!-- Sección Registrar Nueva Cuenta -->
-    <div id="nuevaCuenta" class="seccion" style="display:none;">
-        <h3>Registrar Nueva Cuenta</h3>
-        <form onsubmit="registrarCuenta(event)">
-            <input type="text" id="nombreCliente" placeholder="Nombre del Cliente" required>
-            <input type="text" id="cedulaCliente" placeholder="Cédula" required>
-            <input type="number" id="saldoInicial" placeholder="Saldo Inicial" required>
-            <button type="submit">Registrar</button>
-        </form>
     </div>
 
     <!-- Sección Hacer Transacción -->
@@ -225,32 +187,6 @@
     function mostrar(id) {
       document.querySelectorAll('.seccion').forEach(sec => sec.style.display = 'none');
       document.getElementById(id).style.display = 'block';
-    }
-
-    // Registrar nueva cuenta
-    function registrarCuenta(e) {
-      e.preventDefault();
-      let nombre = document.getElementById("nombreCliente").value;
-      let cedula = document.getElementById("cedulaCliente").value;
-      let saldo = parseFloat(document.getElementById("saldoInicial").value);
-      let numCuenta = Math.floor(Math.random() * 9000000000) + 1000000000;
-
-      // Agregar cliente
-      let filaCliente = `<tr>
-        <td>${nombre}</td><td>${cedula}</td><td>${numCuenta}</td><td>$${saldo}</td>
-      </tr>`;
-      document.getElementById("tabla-clientes").innerHTML += filaCliente;
-
-      // Agregar cuenta
-      let filaCuenta = `<tr>
-        <td>${numCuenta}</td><td>${nombre}</td><td>$${saldo}</td>
-      </tr>`;
-      document.getElementById("tabla-cuentas").innerHTML += filaCuenta;
-
-      alert("Cuenta registrada exitosamente");
-
-      document.querySelector("#nuevaCuenta form").reset();
-      mostrar("clientes");
     }
 
     // Hacer transacción
@@ -285,15 +221,6 @@
       let nuevoSaldo = tipo === "deposito" ? saldoActual + monto : saldoActual - monto;
       clienteEncontrado[3].innerText = "$" + nuevoSaldo;
 
-      // Actualizar tabla de cuentas
-      let filasCuentas = document.querySelectorAll("#tabla-cuentas tr");
-      filasCuentas.forEach(fila => {
-        let celdas = fila.querySelectorAll("td");
-        if (celdas[0].innerText === cuenta) {
-          celdas[2].innerText = "$" + nuevoSaldo;
-        }
-      });
-
       // Registrar transacción
       let nombreCliente = clienteEncontrado[0].innerText;
       let fecha = new Date().toISOString().slice(0,10);
@@ -307,12 +234,6 @@
 
       document.querySelector("#hacerTransaccion form").reset();
       mostrar("transacciones");
-    }
-
-    // Cerrar sesión
-    function cerrarSesion() {
-      alert("Sesión cerrada. ¡Hasta pronto!");
-      window.location.reload();
     }
 </script>
 </body>
