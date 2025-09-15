@@ -13,8 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    // Creamos un Bean para encriptar las contrasenas usando BCrypt
-    // Esto sirve para guardar contrasenas seguras en la base de datos
+    // Creamos un Bean para encriptar las contraseñas usando BCrypt
+    // Esto sirve para guardar contraseñas seguras en la base de datos
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -22,7 +22,7 @@ public class SecurityConfig {
 
     // Este AuthenticationProvider conecta nuestro servicio de usuarios
     // (CustomUserDetailsService) con Spring Security
-    // Aqui le decimos como obtener los usuarios y como validar la contrasena
+    // Aqui le decimos como obtener los usuarios y como validar la contraseña
     @Bean
     public DaoAuthenticationProvider authenticationProvider(CustomUserDetailsService userDetailsService,
                                                             PasswordEncoder passwordEncoder) {
