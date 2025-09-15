@@ -2,150 +2,125 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Usuarios - Banco</title>
+    <title>Dashboard Cliente</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f2f6fc;
+            background-color: #f0f4f8;
             margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        main {
+            display: flex;
+            justify-content: space-around;
             padding: 20px;
         }
 
-        h1 {
-            text-align: center;
-            color: #003366;
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            color: #004080;
-            margin-top: 40px;
+        .cuentas, .transferencia {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 45%;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-            background: #fff;
-            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
         }
 
-        table thead {
-            background: #004080;
-            color: #fff;
-        }
-
-        table th, table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        table tr:hover {
-            background: #f0f8ff;
-        }
-
-        a {
-            color: #e60000;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        form {
-            background: #fff;
-            padding: 20px;
-            margin-top: 15px;
-            box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
-            border-radius: 6px;
-            max-width: 400px;
-        }
-
-        label {
-            font-weight: bold;
-            color: #003366;
-            display: block;
-            margin-top: 10px;
-        }
-
-        input, select {
-            width: 100%;
+        th, td {
+            border: 1px solid #ddd;
             padding: 10px;
-            margin-top: 6px;
-            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 5px;
             border: 1px solid #ccc;
-            border-radius: 4px;
         }
 
         button {
-            background: #004080;
+            background-color: #007bff;
             color: white;
+            padding: 10px 15px;
             border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
         }
 
         button:hover {
-            background: #0066cc;
+            background-color: #0056b3;
         }
+
+        .mensaje {
+            color: green;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
-<h1>Gestión de Usuarios - Banco</h1>
+<header>
+    <h1>Bienvenido, <span th:text="${#authentication.name}">Usuario</span></h1>
+</header>
 
-<!-- ✅ Listado de usuarios -->
-<h2>Lista de Usuarios</h2>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Usuario</th>
-        <th>Roles</th>
-        <th>Activo</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Se repite dinámicamente con Thymeleaf -->
-    <tr th:each="usuario : ${usuarios}">
-        <td th:text="${usuario.id}"></td>
-        <td th:text="${usuario.username}"></td>
-        <td>
-            <ul>
-                <li th:each="rol : ${usuario.roles}" th:text="${rol}"></li>
-            </ul>
-        </td>
-        <td th:text="${usuario.enabled ? 'Sí' : 'No'}"></td>
-        <td>
-            <a th:href="@{'/admin/usuarios/eliminar/' + ${usuario.id}}">Eliminar</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<main>
+    <!-- Seccion de cuentas -->
+    <div class="cuentas">
+        <h2>Mis Cuentas</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Numero de Cuenta</th>
+                <th>Saldo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="cuenta : ${cuentas}">
+                <td th:text="${cuenta.numeroCuenta}">1001</td>
+                <td th:text="${cuenta.saldo}">5000000</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-<!-- ✅ Formulario para crear usuario -->
-<h2>Crear nuevo usuario</h2>
-<form th:action="@{/admin/usuarios/crear}" method="post">
-    <label>Usuario:</label>
-    <input type="text" name="username" required>
+    <!-- Seccion de transferencia -->
+    <div class="transferencia">
+        <h2>Transferir Dinero</h2>
 
-    <label>Contraseña:</label>
-    <input type="password" name="password" required>
+        <div th:if="${mensaje}" class="mensaje" th:text="${mensaje}"></div>
+        <div th:if="${error}" class="error" th:text="${error}"></div>
 
-    <label>Rol:</label>
-    <select name="rol">
-        <option value="ROLE_CLIENTE">Cliente</option>
-        <option value="ROLE_EMPLEADO">Empleado</option>
-        <option value="ROLE_ADMIN">Admin</option>
-    </select>
-
-    <button type="submit">Guardar</button>
-</form>
+        <form th:action="@{/cliente/transferir}" method="post">
+            <input type="text" name="origen" placeholder="Cuenta Origen" required>
+            <input type="text" name="destino" placeholder="Cuenta Destino" required>
+            <input type="number" name="monto" placeholder="Monto" step="0.01" required>
+            <button type="submit">Transferir</button>
+        </form>
+    </div>
+</main>
 </body>
 </html>
